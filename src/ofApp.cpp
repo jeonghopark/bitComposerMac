@@ -48,7 +48,6 @@ void ofApp::scoreZeroOneDraw(){
     int _xStep = 10;
 
     _sizeX = ( (_rectWidth * scoreZeroOne.size()) + ((_xStep-_rectWidth) * (scoreZeroOne.size()-1)) );
-    cout << _sizeX << endl;
     
     ofPushMatrix();
     ofTranslate( ofGetWidth()/2-_sizeX/2, ofGetHeight()/2 );
@@ -64,7 +63,6 @@ void ofApp::scoreZeroOneDraw(){
     }
     
     ofPopStyle();
-    
     ofPopMatrix();
     
 }
