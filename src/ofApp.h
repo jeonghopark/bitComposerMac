@@ -22,12 +22,28 @@ public:
     
     string textInput;
     
-    void scoreZeroOneSetup(string _sInput);
+    void scoreZeroOneSetup(string _input);
     void scoreZeroOneDraw();
     
     vector<int> scoreZeroOne;
     
-    
     void guideLine();
+    
+    void textInputField(int _input);
+    int textInputcounter;
+    
+    
+    void interfaceInformation();
+    bool bFullScreen;
+    
+    bool bPlay;
+    void scoreDraw();
+    
+    float _sizeX;
+    int _rectHeight;
+    int _rectWidth;
+    int _xStep;
+    
+    int oldYHeight;
     
 };
