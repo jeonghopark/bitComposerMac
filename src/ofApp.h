@@ -45,6 +45,7 @@ public:
     void scorePlay(int _index);
     vector<int> scoreData;
     int noteCounter;
+    int tickCounter;
     
     float _sizeX;
     int _rectHeight;

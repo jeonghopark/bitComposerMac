@@ -16,6 +16,7 @@ void ofApp::setup(){
     scoreZeroOneSetup(textInput);
     
     textInputcounter = 0;
+    noteCounter = 0;
     
     synthSetting();
 }
@@ -24,17 +25,17 @@ void ofApp::setup(){
 void ofApp::update(){
     
     if (bPlay) {
-        if (ofGetFrameNum()%15==0) {
-            noteCounter++;
-            scorePlay(noteCounter);
-            if (noteCounter>scoreData.size()) {
-                noteCounter = 0;
+        if (ofGetFrameNum()%3==0) {
+            tickCounter++;
+            if ( (tickCounter%8==0)||(tickCounter%6==0) ) {
+                scorePlay(noteCounter);
+                noteCounter++;
+                if (noteCounter>scoreZeroOne.size()-1) {
+                    noteCounter = 0;
+                }
             }
         }
     }
-    
-    
-
     
 }
 
@@ -50,25 +51,11 @@ void ofApp::draw(){
         scoreDraw();
     }
     
-    
-    //    float keyWidth = ofGetWindowWidth() / NUMBER_OF_KEYS;
-    //    for(int i = 0; i < NUMBER_OF_KEYS; i++){
-    //        if((i == scaleDegree) && ofGetMousePressed() ){
-    //            ofSetColor(255, 151, 0);
-    //        }else{
-    //            int brightness =  100 + (55 * i / NUMBER_OF_KEYS);
-    //            ofSetColor(brightness, brightness, brightness);
-    //        }
-    //        ofRect(keyWidth * i, 0, keyWidth, ofGetWindowHeight());
-    //    }
-    
 }
 
 void ofApp::scoreZeroOneSetup(string _sInput){
     
     textInput = _sInput;
-    //    cout << textInput.c_str() << endl;
-    //    cout << ofToBinary(textInput) << endl;
     
     string _scoreZeroOne = ofToBinary(textInput);
     
@@ -147,7 +134,7 @@ void ofApp::scoreDataInput(){
         
         _yHeight = oldYHeight+_yHeight;
         
-        scoreData.push_back(_yHeight);
+        scoreData.push_back(-_yHeight);
         oldYHeight = _yHeight;
     }
     
@@ -155,20 +142,21 @@ void ofApp::scoreDataInput(){
 
 void ofApp::scorePlay(int _index){
     
-    int newScaleDegree = scoreData[_index]*4+80;
-    if(newScaleDegree != scaleDegree ){
-        scaleDegree = newScaleDegree;
-        trigger(scaleDegree);
-    }else{
-        scaleDegree = newScaleDegree;
+    if (scoreData.size()>0) {
+        int newScaleDegree = scoreData[_index]*3+40;
+        if(newScaleDegree != scaleDegree ){
+            scaleDegree = newScaleDegree;
+            trigger(scaleDegree);
+        }else{
+            scaleDegree = newScaleDegree;
+        }
     }
+    //
+    //    scaleDegree = scoreData[_index]+60;
+    //    trigger();
+    //
     
-//    
-//    scaleDegree = scoreData[_index]+60;
-//    trigger();
-//
-    
-    cout << scaleDegree << endl;
+    cout << _index << " : " << scaleDegree << endl;
     
 }
 
@@ -228,9 +216,9 @@ void ofApp::synthSetting(){
     ControlGenerator midiNote = synth.addParameter("midiNumber");
     ControlGenerator noteFreq =  ControlMidiToFreq().input(midiNote);
     Generator tone = RectWave().freq( noteFreq );
-    tone = LPF12().input(tone).Q(10).cutoff((noteFreq * 2) + SineWave().freq(3) * 0.5 * noteFreq);
+    tone = LPF12().input(tone).Q(10).cutoff((noteFreq * 20) + SineWave().freq(3) * 0.5 * noteFreq);
     ControlGenerator envelopeTrigger = synth.addParameter("trigger");
-    Generator toneWithEnvelope = tone * ADSR().attack(0.1).decay(1.5).sustain(0).release(0).trigger(envelopeTrigger).legato(true);
+    Generator toneWithEnvelope = tone * ADSR().attack(0.01).decay(1.5).sustain(0).release(0).trigger(envelopeTrigger).legato(true);
     Generator toneWithDelay = StereoDelay(0.5, 0.75).input(toneWithEnvelope).wetLevel(0.1).feedback(0.2);
     synth.setOutputGen( toneWithDelay );
     
@@ -288,9 +276,9 @@ void ofApp::keyReleased(int key){
         if (textInputcounter<12) {
             textInputField(key-48);
         } else {
-//            scoreZeroOne.clear();
+            //            scoreZeroOne.clear();
             textInputField(key-48);
-            textInputcounter = 1;
+            textInputcounter = 0;
         }
     }
     
