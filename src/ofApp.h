@@ -1,6 +1,9 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxTonic.h"
+
+using namespace Tonic;
 
 class ofApp : public ofBaseApp{
     
@@ -39,7 +42,9 @@ public:
     bool bPlay;
     void scoreDraw();
     void scoreDataInput();
+    void scorePlay(int _index);
     vector<int> scoreData;
+    int noteCounter;
     
     float _sizeX;
     int _rectHeight;
@@ -49,4 +54,12 @@ public:
     int oldYHeight;
     
     
+    ofxTonicSynth synth;
+    void synthSetting();
+    int scaleDegree;
+    void trigger();
+    void trigger(int _note);
+    void setScaleDegreeBasedOnMouseX();
+    void audioRequested (float * output, int bufferSize, int nChannels);
+
 };
