@@ -40,7 +40,7 @@ void ofApp::scoreZeroOneSetup(string _sInput){
     string _scoreZeroOne = ofToBinary(textInput);
     
     for (int i=0; i<_scoreZeroOne.size(); i++) {
-        scoreZeroOne.push_back(  _scoreZeroOne.at(i)-48 );
+        scoreZeroOne.push_back( _scoreZeroOne.at(i)-48 );
     }
     
     _rectHeight = ofGetHeight()*0.00912;
@@ -84,25 +84,39 @@ void ofApp::scoreDraw(){
     ofPushStyle();
     ofSetColor( ofColor::fromHsb( 0, 0, 0, 255) );
 
-    for (int i=0; i<scoreZeroOne.size(); i++) {
-        int _yHeight = scoreZeroOne[i];
+    for (int i=0; i<scoreData.size(); i++) {
+        int _yHeight = scoreData[i];
         ofPushMatrix();
-        if (_yHeight==0) _yHeight = -1;
-        
-        _yHeight = oldYHeight+_yHeight;
-
-
         ofTranslate(i*_xStep, 0);
         ofRect( 0, 0, _rectWidth, -_yHeight*_rectHeight+1 );
 
         ofPopMatrix();
-
-        oldYHeight = _yHeight;
     }
     
     ofPopStyle();
     ofPopMatrix();
 
+}
+
+void ofApp::scoreDataInput(){
+    scoreData.clear();
+    
+    for (int i=0; i<scoreZeroOne.size(); i++) {
+
+        int _yHeight = scoreZeroOne[i];
+        
+        if (_yHeight==0) {
+            _yHeight = -1;
+        }
+        else {
+            _yHeight = 1;
+        }
+        
+        _yHeight = oldYHeight+_yHeight;
+
+        scoreData.push_back(_yHeight);
+        oldYHeight = _yHeight;
+    }
     
 }
 
@@ -162,7 +176,6 @@ void ofApp::keyPressed(int key){
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
     
-    
     if ( (key<=122)&&(key>=97) ) {
         textInputcounter++;
         if (textInputcounter<12) {
@@ -176,10 +189,14 @@ void ofApp::keyReleased(int key){
     
     if (key==127) {
         scoreZeroOne.clear();
+        oldYHeight = 0;
+        scoreData.clear();
         textInputcounter = 0;
     }
     
     if (key==32) {
+        oldYHeight = 0;
+        scoreDataInput();
         bPlay = !bPlay;
     }
 

@@ -38,6 +38,8 @@ public:
     
     bool bPlay;
     void scoreDraw();
+    void scoreDataInput();
+    vector<int> scoreData;
     
     float _sizeX;
     int _rectHeight;
@@ -45,5 +47,6 @@ public:
     int _xStep;
     
     int oldYHeight;
+    
     
 };
