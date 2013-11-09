@@ -14,9 +14,11 @@ void ofApp::setup(){
     
     textInput = "";
     scoreZeroOneSetup(textInput);
-    
+
     textInputcounter = 0;
     noteCounter = 0;
+    evolutionFactor = 0;
+    evolutionFactorDirection = 1;
     
     synthSetting();
 }
@@ -25,13 +27,20 @@ void ofApp::setup(){
 void ofApp::update(){
     
     if (bPlay) {
-        if (ofGetFrameNum()%3==0) {
+        if (ofGetFrameNum()%2==0) {
             tickCounter++;
-            if ( (tickCounter%8==0)||(tickCounter%6==0) ) {
+            if ( (tickCounter%8==0)||(tickCounter%4==0) ) {
                 scorePlay(noteCounter);
                 noteCounter++;
                 if (noteCounter>scoreZeroOne.size()-1) {
                     noteCounter = 0;
+                    evolutionFactor = evolutionFactor + evolutionFactorDirection;
+                    if (evolutionFactor>50) {
+                        evolutionFactorDirection = -1;
+                    }
+                    if (evolutionFactor<0) {
+                        evolutionFactorDirection = 1;
+                    }                    
                 }
             }
         }
@@ -60,15 +69,13 @@ void ofApp::scoreZeroOneSetup(string _sInput){
     string _scoreZeroOne = ofToBinary(textInput);
     
     for (int i=0; i<_scoreZeroOne.size(); i++) {
-        scoreZeroOne.push_back( _scoreZeroOne.at(i)-48 );
+        scoreZeroOne.push_back( _scoreZeroOne.at(i) );
     }
     
-    _rectHeight = ofGetHeight()*0.00912;
-    _rectWidth = ofGetWidth()*0.00390;
-    _xStep = ofGetWidth()*0.00488;
-    
-    
-    
+    _rectHeight = ofGetHeight()*0.00912*1.2;
+    _rectWidth = ofGetWidth()*0.00390*1.2;
+    _xStep = ofGetWidth()*0.00488*1.2;
+
 }
 
 
@@ -77,7 +84,6 @@ void ofApp::scoreZeroOneDraw(){
     
     _sizeX = ( (_rectWidth * scoreZeroOne.size()) + ((_xStep-_rectWidth) * (scoreZeroOne.size()-1)) );
     
-    
     ofPushMatrix();
     ofTranslate( ofGetWidth()/2-_sizeX/2, ofGetHeight()/2 );
     ofPushStyle();
@@ -85,6 +91,7 @@ void ofApp::scoreZeroOneDraw(){
     
     for (int i=0; i<scoreZeroOne.size(); i++) {
         int _yHeight = scoreZeroOne[i];
+
         ofPushMatrix();
         ofTranslate(i*_xStep, 0);
         ofRect( 0, 0, _rectWidth, -_yHeight*_rectHeight+1 );
@@ -109,7 +116,6 @@ void ofApp::scoreDraw(){
         ofPushMatrix();
         ofTranslate(i*_xStep, 0);
         ofRect( 0, 0, _rectWidth, -_yHeight*_rectHeight+1 );
-        
         ofPopMatrix();
     }
     
@@ -124,7 +130,7 @@ void ofApp::scoreDataInput(){
     for (int i=0; i<scoreZeroOne.size(); i++) {
         
         int _yHeight = scoreZeroOne[i];
-        
+
         if (_yHeight==0) {
             _yHeight = -1;
         }
@@ -143,7 +149,7 @@ void ofApp::scoreDataInput(){
 void ofApp::scorePlay(int _index){
     
     if (scoreData.size()>0) {
-        int newScaleDegree = scoreData[_index]*3+40;
+        int newScaleDegree = scoreData[_index]*3+40+(ofRandom(evolutionFactor*2)-evolutionFactor);
         if(newScaleDegree != scaleDegree ){
             scaleDegree = newScaleDegree;
             trigger(scaleDegree);
@@ -151,13 +157,6 @@ void ofApp::scorePlay(int _index){
             scaleDegree = newScaleDegree;
         }
     }
-    //
-    //    scaleDegree = scoreData[_index]+60;
-    //    trigger();
-    //
-    
-    cout << _index << " : " << scaleDegree << endl;
-    
 }
 
 
@@ -189,9 +188,9 @@ void ofApp::guideLine(){
 }
 
 
-void ofApp::textInputField(int _input){
-    
-    string _scoreZeroOne = ofToBinary( ofToString(_input) );
+void ofApp::textInputField(char _input){
+
+    string _scoreZeroOne = ofToBinary( _input );
     
     for (int i=0; i<_scoreZeroOne.size(); i++) {
         scoreZeroOne.push_back(  _scoreZeroOne.at(i)-48 );
@@ -204,7 +203,7 @@ void ofApp::interfaceInformation(){
     ofPushStyle();
     ofSetColor( ofColor::fromHsb( 0, 0, 0, 255) );
     
-    ofDrawBitmapString("FullScreen : Shift+F", 10, ofGetHeight()-40);
+    ofDrawBitmapString("FullScreen : Enter", 10, ofGetHeight()-40);
     ofDrawBitmapString("delete : del", 10, ofGetHeight()-25);
     ofDrawBitmapString("Play : space bar", 10, ofGetHeight()-10);
     ofPopStyle();
@@ -216,10 +215,11 @@ void ofApp::synthSetting(){
     ControlGenerator midiNote = synth.addParameter("midiNumber");
     ControlGenerator noteFreq =  ControlMidiToFreq().input(midiNote);
     Generator tone = RectWave().freq( noteFreq );
-    tone = LPF12().input(tone).Q(10).cutoff((noteFreq * 20) + SineWave().freq(3) * 0.5 * noteFreq);
+    tone = LPF12().input(tone).Q(10).cutoff((noteFreq * 30) + SineWave().freq(3) * 0.5 * noteFreq);
+    
     ControlGenerator envelopeTrigger = synth.addParameter("trigger");
-    Generator toneWithEnvelope = tone * ADSR().attack(0.01).decay(1.5).sustain(0).release(0).trigger(envelopeTrigger).legato(true);
-    Generator toneWithDelay = StereoDelay(0.5, 0.75).input(toneWithEnvelope).wetLevel(0.1).feedback(0.2);
+    Generator toneWithEnvelope = tone * ADSR().attack(0.005).decay(1.5).sustain(0).release(0).trigger(envelopeTrigger).legato(true);
+    Generator toneWithDelay = StereoDelay(0.5, 0.75).input(toneWithEnvelope).wetLevel(0.4).feedback(0.3);
     synth.setOutputGen( toneWithDelay );
     
 }
@@ -229,23 +229,20 @@ void ofApp::trigger(){
     static int twoOctavePentatonicScale[10] = {0, 2, 4, 7, 9, 12, 14, 16, 19, 21};
     int degreeToTrigger = floor(ofClamp(scaleDegree, 0, 9));
 	
-    // set a parameter that we created when we defined the synth
     synth.setParameter("midiNumber", 44 + twoOctavePentatonicScale[degreeToTrigger]);
-    
-    // simply setting the value of a parameter causes that parameter to send a "trigger" message to any
-    // using them as triggers
     synth.setParameter("trigger", 1);
 }
 
 void ofApp::trigger(int _note){
-    static int twoOctavePentatonicScale[10] = {0, 2, 4, 7, 9, 12, 14, 16, 19, 21};
-    int degreeToTrigger = floor(ofClamp(scaleDegree, 0, 9));
-	
-    // set a parameter that we created when we defined the synth
-    synth.setParameter("midiNumber", _note);
-    
-    // simply setting the value of a parameter causes that parameter to send a "trigger" message to any
-    // using them as triggers
+    synth.setParameter("midiNumber", _note-10);
+    synth.setParameter("trigger", 1);
+}
+
+void ofApp::triggerScale(int _note, int _scale){
+    static int twoOctavePentatonicScale[10] = {-19, -12, -7, -9, 0, 7, 9, 12, 19, 21};
+    int degreeToTrigger = floor(ofClamp( ofMap(_note, 30, 70, 0, 9), 0, 9));
+    cout << "scale : " << _note << endl;
+    synth.setParameter("midiNumber",  + twoOctavePentatonicScale[degreeToTrigger] + 60);
     synth.setParameter("trigger", 1);
 }
 
@@ -271,13 +268,16 @@ void ofApp::keyPressed(int key){
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
     
-    if ( (key<=122)&&(key>=97) ) {
+    if ( ((key<=122)&&(key>=97))||((key<=90)&&(key>=65)) ) {
         textInputcounter++;
-        if (textInputcounter<12) {
-            textInputField(key-48);
+        bPlay = false;
+        if (textInputcounter<15) {
+            textInputField((char)key);
         } else {
-            //            scoreZeroOne.clear();
-            textInputField(key-48);
+            scoreData.clear();
+            scoreZeroOne.clear();
+//            textInputField((char)key);
+            oldYHeight = 0;
             textInputcounter = 0;
         }
     }
@@ -293,10 +293,14 @@ void ofApp::keyReleased(int key){
         oldYHeight = 0;
         
         bPlay = !bPlay;
-        if (bPlay) scoreDataInput();
+        if (bPlay) {
+            scoreDataInput();
+        }
     }
+
     
-    if (key=='F') {
+    
+    if (key==13) {
         bFullScreen = !bFullScreen;
         ofSetFullscreen(bFullScreen);
     }

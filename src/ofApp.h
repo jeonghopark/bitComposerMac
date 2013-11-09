@@ -32,7 +32,7 @@ public:
     
     void guideLine();
     
-    void textInputField(int _input);
+    void textInputField(char _input);
     int textInputcounter;
     
     
@@ -47,6 +47,10 @@ public:
     int noteCounter;
     int tickCounter;
     
+    int evolutionFactor;
+    int evolutionFactorDirection;
+    
+    
     float _sizeX;
     int _rectHeight;
     int _rectWidth;
@@ -60,6 +64,7 @@ public:
     int scaleDegree;
     void trigger();
     void trigger(int _note);
+    void triggerScale(int _note, int _scale);
     void setScaleDegreeBasedOnMouseX();
     void audioRequested (float * output, int bufferSize, int nChannels);
 
