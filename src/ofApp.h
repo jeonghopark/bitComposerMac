@@ -33,7 +33,7 @@ public:
     
     void guideLine();
     
-    void textInputField(char _input);
+    void textInputCharToNumber(char _input);
     int textInputcounter;
     
     

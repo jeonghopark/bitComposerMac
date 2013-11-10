@@ -1,9 +1,6 @@
 #include "ofApp.h"
 
 
-#define NUMBER_OF_KEYS 10
-
-
 //--------------------------------------------------------------
 void ofApp::setup(){
     
@@ -252,9 +249,7 @@ void ofApp::entropyParticleMake(int _index) {
     
     entropyParticleHeight = ofGetHeight() * 0.0390625;
     entropyParticleWidth = ofGetWidth() * 0.146484375;
-    
-    cout << _index << endl;
-    
+        
     int _indexRatio = ofClamp( ofMap( _index, 0, 50, 1, 7), 1, 7 );
     
     if (_index-oldEntropyparticleDrawIndex==1) {
@@ -335,7 +330,7 @@ void ofApp::guideLine(){
 }
 
 
-void ofApp::textInputField(char _input){
+void ofApp::textInputCharToNumber(char _input){
 
     sScoreZeroOne.push_back(ofToBinary( _input ));
     
@@ -441,11 +436,11 @@ void ofApp::keyReleased(int key){
         textInputcounter++;
         bPlay = false;
         if (textInputcounter<12) {
-            textInputField((char)key);
+            textInputCharToNumber((char)key);
         } else {
             scoreData.clear();
             scoreZeroOne.clear();
-//            textInputField((char)key);
+//            textInputCharToNumber((char)key);
             oldYHeight = 0;
             textInputcounter = 0;
             sScoreZeroOne.clear();
