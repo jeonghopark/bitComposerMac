@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxTonic.h"
+#include "ParticleCircle.h"
 
 using namespace Tonic;
 
@@ -40,17 +41,28 @@ public:
     bool bFullScreen;
     
     bool bPlay;
-    void scoreDraw();
+    void scoreDraw(int _index);
     void scoreDataInput();
     void scorePlay(int _index);
     vector<int> scoreData;
     int noteCounter;
     int tickCounter;
+    vector<string> sScoreZeroOne;
     
-    int evolutionFactor;
-    int evolutionFactorDirection;
+    vector<int> evolutionFactor;
+    vector<int> evolutionFactorDirection;
+    vector<float> evolutionValue;
+    int entrophyTriLineXPos;
+    int entrophyTriLineXPosDirection;
+    void entropyTriDraw(int _xPos);
     
+    void entropyParticleMake(int _index);
+    void entropyParticleUpdate();
+    void entropyParticleDraw();
+    int entropyParticleHeight, entropyParticleWidth;
     
+    int oldEntropyparticleDrawIndex;
+
     float _sizeX;
     int _rectHeight;
     int _rectWidth;
@@ -65,7 +77,19 @@ public:
     void trigger();
     void trigger(int _note);
     void triggerScale(int _note, int _scale);
-    void setScaleDegreeBasedOnMouseX();
     void audioRequested (float * output, int bufferSize, int nChannels);
+    
+    
+    vector<int> allValue;
+    void allDrawing();
+    bool bAllDrawing;
+    
+    ofTrueTypeFont drawingFont;
+    int textFontSize;
+    float textSizeFactor;
+    void textDrawSetup();
+    void textDrawing();
 
+    
+    vector<ParticleCircle> particleCircle;
 };
