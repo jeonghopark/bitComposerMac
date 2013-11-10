@@ -60,8 +60,8 @@ public:
     void entropyParticleUpdate();
     void entropyParticleDraw();
     int entropyParticleHeight, entropyParticleWidth;
-    
     int oldEntropyparticleDrawIndex;
+    bool bEntropyParticleView;
 
     float _sizeX;
     int _rectHeight;

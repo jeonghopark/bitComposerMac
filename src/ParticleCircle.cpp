@@ -16,8 +16,8 @@ ParticleCircle::ParticleCircle(int _xPos, int _yPos){
     xPos = ofRandom(xMax);
     yPos = ofRandom(yMax);
     
-    xSpeed = ofRandom(3)+1;
-    ySpeed = ofRandom(3)+1;
+    xSpeed = ofRandom(1.5)+0.5;
+    ySpeed = ofRandom(1.5)+0.5;
     xDirection = round(ofRandom(1));
     yDirection = round(ofRandom(1));
     
@@ -28,31 +28,54 @@ ParticleCircle::ParticleCircle(int _xPos, int _yPos){
         yDirection = -1;
     }
 
+    circleSize = 2;
 }
+
+
+ParticleCircle::~ParticleCircle(){
+    xMax = 0;
+    yMax = 0;
+    
+    xPos = 0;
+    yPos = 0;
+    
+    xSpeed = 0;
+    ySpeed = 0;
+    xDirection = 0;
+    yDirection = 0;
+    
+}
+
 
 void ParticleCircle::setup() {
 
 }
 
 
-void ParticleCircle::update() {
+void ParticleCircle::update(int _xMax, int _yMax) {
+    
+    xMax = _xMax;
+    yMax = _yMax;
+    
     xPos = xPos + xSpeed * xDirection;
     yPos = yPos + ySpeed * yDirection;
         
-    if (xPos>xMax) xDirection = -1;
-    if (xPos<0) xDirection = 1;
-    if (yPos>yMax) yDirection = -1;
-    if (yPos<0) yDirection = 1;
- 
+    if (xPos>xMax-circleSize) xDirection = -1;
+    if (xPos<circleSize) xDirection = 1;
+    if (yPos>yMax-circleSize) yDirection = -1;
+    if (yPos<circleSize) yDirection = 1;
+
+    if (xPos>xMax) xPos = ofRandom( _xMax );
+
 }
 
 
 void ParticleCircle::draw() {
     
     ofPushStyle();
-    ofSetColor( ofColor::fromHsb( 0, 0, 0, 255) );
+    ofSetColor( ofColor::fromHsb( 0, 0, 0, 170) );
 
-    ofEllipse( xPos, yPos, 2, 2 );
+    ofEllipse( xPos, yPos, circleSize, circleSize );
     ofPopStyle();
     
 }

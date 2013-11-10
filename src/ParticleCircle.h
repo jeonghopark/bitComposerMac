@@ -16,18 +16,18 @@ class ParticleCircle {
     public :
     
     ParticleCircle(int _xPos, int _yPos);
-    
+    ~ParticleCircle();
     
     void setup();
-    void update();
+    void update(int _xMax, int _yMax);
     void draw();
     
     float xMax, yMax;
     float xPos, yPos;
     int xDirection, yDirection;
     
-    int xSpeed, ySpeed;
-    
+    float xSpeed, ySpeed;
+    int circleSize;
 };
 
 #endif /* defined(__stringToBinaryComposition__Particle__) */

@@ -17,14 +17,17 @@ void ofApp::setup(){
 
     textInputcounter = 0;
     noteCounter = 0;
-    entrophyTriLineXPos = 0;
     entrophyTriLineXPosDirection = 1;
+    entrophyTriLineXPos = 1;
+    oldEntropyparticleDrawIndex = 0;
     
     synthSetting();
     
     bAllDrawing = false;
     
     textDrawSetup();
+    
+    bEntropyParticleView = false;
 
 }
 
@@ -64,8 +67,11 @@ void ofApp::update(){
         }
     }
     
-    entropyParticleMake(entrophyTriLineXPos);
-    entropyParticleUpdate();
+    
+    if (bEntropyParticleView) {
+        entropyParticleMake(entrophyTriLineXPos);
+        entropyParticleUpdate();
+    }
 
 
 }
@@ -81,7 +87,7 @@ void ofApp::draw(){
     if (bPlay) {
         scoreDraw(noteCounter);
 //        entropyTriDraw(entrophyTriLineXPos);
-        entropyParticleDraw();
+        if (bEntropyParticleView) entropyParticleDraw();
 //        allDrawing();
     }
     
@@ -118,6 +124,8 @@ void ofApp::scoreZeroOneDraw(){
     
     for (int i=0; i<scoreZeroOne.size(); i++) {
         int _yHeight = scoreZeroOne[i];
+        
+        if (_yHeight==1000) _yHeight = 0;
 
         ofPushMatrix();
         ofTranslate(i*_xStep, 0);
@@ -148,7 +156,9 @@ void ofApp::scoreDraw(int _index){
     ofSetColor( ofColor::fromHsb( 0, 0, 0, 255) );
     
     for (int i=0; i<scoreData.size(); i++) {
+
         float _yHeight = scoreData[i]+ofMap(evolutionValue[i],-100,100,-20,20);
+
         ofPushMatrix();
         ofTranslate(i*_xStep, 0);
         ofRect( 0, 0, _rectWidth, -_yHeight*_rectHeight+1 );
@@ -170,8 +180,7 @@ void ofApp::scoreDataInput(){
 
         if (_yHeight==0) {
             _yHeight = -1;
-        }
-        else {
+        } else {
             _yHeight = 1;
         }
         
@@ -241,11 +250,22 @@ void ofApp::entropyTriDraw(int _xPos){
 
 void ofApp::entropyParticleMake(int _index) {
     
-    entropyParticleHeight = 30;
-    entropyParticleWidth = 150;
+    entropyParticleHeight = ofGetHeight() * 0.0390625;
+    entropyParticleWidth = ofGetWidth() * 0.146484375;
+    
+    cout << _index << endl;
+    
+    int _indexRatio = ofClamp( ofMap( _index, 0, 50, 1, 7), 1, 7 );
     
     if (_index-oldEntropyparticleDrawIndex==1) {
-        particleCircle.push_back( ParticleCircle( entropyParticleWidth, entropyParticleHeight ) );
+        for (int i=0; i<_indexRatio; i++) {
+            particleCircle.push_back( ParticleCircle( entropyParticleWidth, entropyParticleHeight ) );
+        }
+    }
+    if (_index-oldEntropyparticleDrawIndex==-1) {
+        for (int i=0; i<_indexRatio; i++) {
+            particleCircle.erase( particleCircle.end() );
+        }
     }
 
     oldEntropyparticleDrawIndex = _index;
@@ -253,8 +273,9 @@ void ofApp::entropyParticleMake(int _index) {
 }
 
 void ofApp::entropyParticleUpdate(){
+    
     for (int i=0; i<particleCircle.size(); i++) {
-        particleCircle[i].update();
+        particleCircle[i].update( entropyParticleWidth, entropyParticleHeight );
     }
 }
 
@@ -269,17 +290,16 @@ void ofApp::entropyParticleDraw() {
     ofPushMatrix();
     ofPushStyle();
     
-    ofTranslate( ofGetWidth()/2 - _l * 0.5, ofGetHeight()*0.8 );
+    ofTranslate( ofGetWidth()/2 - _l * 0.5, ofGetHeight() * 0.8 );
     
     for (int i=0; i<particleCircle.size(); i++) {
         particleCircle[i].draw();
     }
     
     ofNoFill();
-    ofSetColor( ofColor::fromHsb( 0, 0, 0, 80) );
+    ofSetColor( ofColor::fromHsb( 0, 0, 0, 40) );
 
     ofRect( 0, 0, entropyParticleWidth, entropyParticleHeight );
-    
     
     ofPopStyle();
     ofPopMatrix();
@@ -326,8 +346,6 @@ void ofApp::textInputField(char _input){
         evolutionFactor.push_back(0);
         evolutionFactorDirection.push_back(1);
         evolutionValue.push_back(0);
-        
-
     }
     
 }
@@ -356,11 +374,11 @@ void ofApp::synthSetting(){
     tone = LPF12().input(tone).Q(10).cutoff((noteFreq * 30) + SineWave().freq(3) * 0.5 * noteFreq);
     tone2 = LPF24().input(tone2).Q(20).cutoff((noteFreq * 30) + SineWave().freq(3) * 0.5 * noteFreq);
     
-    tone = tone * 0.5 + tone2 * 0.8;
+    tone = tone * 0.5 + tone2 * 10.8;
     
     ControlGenerator envelopeTrigger = synth.addParameter("trigger");
-    Generator toneWithEnvelope = tone * ADSR().attack(0.001).decay(1.5).sustain(0).release(0).trigger(envelopeTrigger).legato(true);
-    Generator toneWithDelay = StereoDelay(0.5, 0.75).input(toneWithEnvelope).wetLevel(0.1).feedback(0.2);
+    Generator toneWithEnvelope = tone * ADSR().attack(0).decay(0.1).sustain(0).release(0).trigger(envelopeTrigger).legato(false);
+    Generator toneWithDelay = StereoDelay(0.5, 0.75).input(toneWithEnvelope).wetLevel(0.2).feedback(0.25);
     synth.setOutputGen( toneWithDelay );
     
 }
@@ -377,7 +395,7 @@ void ofApp::trigger(){
 void ofApp::trigger(int _note){
     synth.setParameter("midiNumber", _note);
     synth.setParameter("trigger", 1);
-    synth.setParameter("tone2VolIn", ofMap(_note,30,80,0.2,2.0));
+    synth.setParameter("tone2VolIn", ofMap(_note,30,80,0.2,5.0));
 }
 
 void ofApp::triggerScale(int _note, int _scale){
@@ -433,6 +451,7 @@ void ofApp::keyReleased(int key){
             sScoreZeroOne.clear();
         }
     }
+
     
     if (key==127) {
         scoreZeroOne.clear();
@@ -441,11 +460,16 @@ void ofApp::keyReleased(int key){
         textInputcounter = 0;
         tickCounter = 0;
         noteCounter = 0;
-        entrophyTriLineXPos = 0;
+        entrophyTriLineXPos = 1;
+        oldEntropyparticleDrawIndex = 0;
         evolutionFactor.clear();
         evolutionValue.clear();
         evolutionFactorDirection.clear();
         sScoreZeroOne.clear();
+        bEntropyParticleView = false;
+        particleCircle.clear();
+//        entropyParticleMake(0);
+
     }
     
     if (key==32) {
@@ -454,6 +478,11 @@ void ofApp::keyReleased(int key){
         bPlay = !bPlay;
         if (bPlay) {
             scoreDataInput();
+            entrophyTriLineXPos = 1;
+            oldEntropyparticleDrawIndex = 0;
+            if (scoreData.size()!=0) bEntropyParticleView = true;
+        } else {
+            particleCircle.clear();
         }
     }
 
@@ -495,6 +524,11 @@ void ofApp::mouseReleased(int x, int y, int button){
 void ofApp::windowResized(int w, int h){
     
     textDrawSetup();
+    
+    for (int i=0; i<particleCircle.size(); i++) {
+        particleCircle[i].xMax = entropyParticleWidth;
+        particleCircle[i].yMax = entropyParticleHeight;
+    }
     
 }
 
