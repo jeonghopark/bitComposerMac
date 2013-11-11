@@ -26,10 +26,10 @@ public:
     
     string textInput;
     
-    void scoreZeroOneSetup(string _input);
-    void scoreZeroOneDraw();
+    void zeroOneScoreSetup(string _input);
+    void zeroOneScoreDraw();
     
-    vector<int> scoreZeroOne;
+    vector<int> zeroOneScore;
     
     void guideLine();
     
@@ -47,7 +47,7 @@ public:
     vector<int> scoreData;
     int noteCounter;
     int tickCounter;
-    vector<string> sScoreZeroOne;
+    vector<string> szeroOneScore;
     
     vector<int> evolutionFactor;
     vector<int> evolutionFactorDirection;
@@ -64,9 +64,9 @@ public:
     bool bEntropyParticleView;
 
     float _sizeX;
-    int _rectHeight;
-    int _rectWidth;
-    int _xStep;
+    float _rectHeight;
+    float _rectWidth;
+    float _xStep;
     
     int oldYHeight;
     
@@ -92,4 +92,5 @@ public:
 
     
     vector<ParticleCircle> particleCircle;
+    
 };
