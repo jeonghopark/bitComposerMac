@@ -16,8 +16,8 @@ ParticleCircle::ParticleCircle(int _xPos, int _yPos){
     xPos = ofRandom(xMax);
     yPos = ofRandom(yMax);
     
-    xSpeed = ofRandom(1.5)+0.5;
-    ySpeed = ofRandom(1.5)+0.5;
+    xSpeed = ofRandom(1.5)+0.1;
+    ySpeed = ofRandom(1.5)+0.1;
     xDirection = round(ofRandom(1));
     yDirection = round(ofRandom(1));
     

@@ -19,6 +19,7 @@ void ofApp::setup(){
     oldEntropyparticleDrawIndex = 0;
     
     synthSetting();
+    synthBassSetting();
     
     bAllDrawing = false;
     
@@ -373,8 +374,27 @@ void ofApp::synthSetting(){
     ControlGenerator envelopeTrigger = synth.addParameter("trigger");
     Generator toneWithEnvelope = tone * ADSR().attack(0).decay(0.1).sustain(0).release(0).trigger(envelopeTrigger).legato(false);
     Generator toneWithDelay = StereoDelay(0.5, 0.75).input(toneWithEnvelope).wetLevel(0.2).feedback(0.25);
-    synth.setOutputGen( toneWithDelay );
+
     
+    ControlGenerator midiNoteBass = synthBass.addParameter("midiNumber");
+    ControlGenerator noteFreqBass =  ControlMidiToFreq().input(midiNoteBass);
+    
+    Generator toneBass = RectWave().freq( noteFreqBass );
+    
+    toneBass = LPF12().input(toneBass).Q(10).cutoff((noteFreqBass * 30) + SineWave().freq(3) * 0.5 * noteFreqBass);
+    
+    ControlGenerator envelopeTriggerBass = synthBass.addParameter("trigger");
+    Generator toneWithEnvelopeBass = toneBass * ADSR().attack(0).decay(0.03).sustain(0).release(0).trigger(envelopeTriggerBass).legato(false);
+    
+    synth.setOutputGen( toneWithDelay + toneWithEnvelopeBass );
+    
+}
+
+void ofApp::synthBassSetting(){
+    
+//    Generator toneWithDelay = StereoDelay(0.5, 0.75).input(toneWithEnvelope).wetLevel(0.2).feedback(0.25);
+//    synthBass.setOutputGen( toneWithEnvelopeBass );
+ 
 }
 
 //--------------------------------------------------------------
@@ -390,6 +410,9 @@ void ofApp::trigger(int _note){
     synth.setParameter("midiNumber", _note);
     synth.setParameter("trigger", 1);
     synth.setParameter("tone2VolIn", ofMap(_note,30,80,0.2,5.0));
+    
+    synthBass.setParameter("midiNumber", _note-24);
+    synthBass.setParameter("trigger", 1);
 }
 
 void ofApp::triggerScale(int _note, int _scale){

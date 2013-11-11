@@ -72,7 +72,9 @@ public:
     
     
     ofxTonicSynth synth;
+    ofxTonicSynth synthBass;
     void synthSetting();
+    void synthBassSetting();
     int scaleDegree;
     void trigger();
     void trigger(int _note);
