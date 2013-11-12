@@ -70,7 +70,7 @@ public:
     
     int oldYHeight;
     
-    
+    ofSoundStream outputStream;
     ofxTonicSynth synth;
     ofxTonicSynth synthBass;
     void synthSetting();

@@ -3,11 +3,13 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    
     ofSetFrameRate(60);
     ofBackground( ofColor::fromHsb(0, 0, 255) );
     
-    ofSoundStreamSetup(2, 0, this, 44100, 256, 4);
+    ofSoundStreamListDevices();
+    outputStream.setDeviceID(3);
+    outputStream.setup(this, 2, 0, 44100, 256, 4);
+//    ofSoundStreamSetup(2, 0, this, 44100, 256, 4);
     
     textInput = "";
     zeroOneScoreSetup(textInput);
@@ -439,14 +441,14 @@ void ofApp::textDrawing() {
     ofPushStyle();
     ofSetColor( ofColor::fromHsb( 0, 0, 0, 160) );
     ofTranslate( ofGetWidth()*0.5-szeroOneScore.size()*textFontSize*0.5, ofGetHeight()-ofGetHeight()*0.03451 );
+ 
     for (int i=0; i<szeroOneScore.size(); i++) {
-        
         ofRectangle r = drawingFont.getStringBoundingBox(ofBinaryToString(szeroOneScore[i]), 0, 0);
         ofPushMatrix();
-        cout << r.width << endl;
         drawingFont.drawString( ofBinaryToString(szeroOneScore[i]), (i*textFontSize) - r.width/2, 0 );
         ofPopMatrix();
     }
+    
     ofPopStyle();
     ofPopMatrix();
 }

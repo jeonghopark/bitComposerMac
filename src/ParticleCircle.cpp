@@ -33,16 +33,6 @@ ParticleCircle::ParticleCircle(int _xPos, int _yPos){
 
 
 ParticleCircle::~ParticleCircle(){
-    xMax = 0;
-    yMax = 0;
-    
-    xPos = 0;
-    yPos = 0;
-    
-    xSpeed = 0;
-    ySpeed = 0;
-    xDirection = 0;
-    yDirection = 0;
     
 }
 
