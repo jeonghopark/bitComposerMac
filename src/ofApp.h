@@ -23,75 +23,65 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
-    
     string textInput;
     
-    void zeroOneScoreSetup(string _input);
-    void zeroOneScoreDraw();
+    float width, height;
     
-    vector<int> zeroOneScore;
+    void binaryScoreSetup(string _input);
+    void binaryScoreDraw();
     
-    void guideLine();
+    vector<int> binaryScore;
     
     void textInputCharToNumber(char _input);
     int textInputcounter;
     
-    
-    void interfaceInformation();
+    void textInformation();
     bool bFullScreen;
+    bool bTextInformation;
     
     bool bPlay;
-    void scoreDraw(int _index);
-    void scoreDataInput();
-    void scorePlay(int _index);
-    vector<int> scoreData;
+    void mainScoreDraw(int _index);
+    void mainScoreDataInput();
+    void mainsScorePlay(int _index);
+    vector<int> mainScoreData;
     int noteCounter;
     int tickCounter;
-    vector<string> szeroOneScore;
+    vector<string> sBinaryScore;
     
     vector<int> evolutionFactor;
     vector<int> evolutionFactorDirection;
     vector<float> evolutionValue;
-    int entrophyTriLineXPos;
-    int entrophyTriLineXPosDirection;
-    void entropyTriDraw(int _xPos);
-    
+
+    int entropyParticleIndex;
+    int entropyParticleNumberFactor;
     void entropyParticleMake(int _index);
     void entropyParticleUpdate();
     void entropyParticleDraw();
-    int entropyParticleHeight, entropyParticleWidth;
+    int entropyParticleBoxHeight, entropyParticleBoxWidth;
     int oldEntropyparticleDrawIndex;
     bool bEntropyParticleView;
 
-    float _sizeX;
-    float _rectHeight;
-    float _rectWidth;
-    float _xStep;
+    float binaryScoreWidth;
+    float binaryElementHeight;
+    float binaryElementWidth;
+    float binaryElementStep;
     
     int oldYHeight;
     
-    ofSoundStream outputStream;
     ofxTonicSynth synth;
     ofxTonicSynth synthBass;
     void synthSetting();
-    void synthBassSetting();
     int scaleDegree;
     void trigger();
     void trigger(int _note);
     void triggerScale(int _note, int _scale);
     void audioRequested (float * output, int bufferSize, int nChannels);
-    
-    
-    vector<int> allValue;
-    void allDrawing();
-    bool bAllDrawing;
-    
+        
     ofTrueTypeFont drawingFont;
     int textFontSize;
     float textSizeFactor;
     void textDrawSetup();
     void textDrawing();
-
     
     vector<ParticleCircle> particleCircle;
     

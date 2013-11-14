@@ -3,31 +3,34 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    ofSetDataPathRoot("../Resources/data/");
+
     ofSetFrameRate(60);
     ofBackground( ofColor::fromHsb(0, 0, 255) );
     
-    ofSoundStreamListDevices();
-    outputStream.setDeviceID(3);
-    outputStream.setup(this, 2, 0, 44100, 256, 4);
-//    ofSoundStreamSetup(2, 0, this, 44100, 256, 4);
+    ofSoundStreamSetup(2, 0, this, 44100, 256, 4);
     
     textInput = "";
-    zeroOneScoreSetup(textInput);
+    binaryScoreSetup(textInput);
 
     textInputcounter = 0;
     noteCounter = 0;
-    entrophyTriLineXPosDirection = 1;
-    entrophyTriLineXPos = 1;
+    entropyParticleNumberFactor = 1;
+    entropyParticleIndex = 1;
     oldEntropyparticleDrawIndex = 0;
     
+    width = ofGetWidth();
+    height = ofGetHeight();
+
     synthSetting();
-    synthBassSetting();
-    
-    bAllDrawing = false;
     
     textDrawSetup();
     
     bEntropyParticleView = false;
+    
+    bTextInformation = true;
+    
+    
 
 }
 
@@ -38,17 +41,17 @@ void ofApp::update(){
         if (ofGetFrameNum()%2==0) {
             tickCounter++;
             if ( (tickCounter%8==0)||(tickCounter%4==0) ) {
-                scorePlay(noteCounter);
+                mainsScorePlay(noteCounter);
                 noteCounter++;
-                if (noteCounter>zeroOneScore.size()-1) {
+                if (noteCounter>binaryScore.size()-1) {
                     noteCounter = 0;
-                    entrophyTriLineXPos = entrophyTriLineXPos + entrophyTriLineXPosDirection;
+                    entropyParticleIndex = entropyParticleIndex + entropyParticleNumberFactor;
                     
-                    if (entrophyTriLineXPos>50) {
-                        entrophyTriLineXPosDirection = -1;
+                    if (entropyParticleIndex>50) {
+                        entropyParticleNumberFactor = -1;
                     }
-                    if (entrophyTriLineXPos<0) {
-                        entrophyTriLineXPosDirection = 1;
+                    if (entropyParticleIndex<0) {
+                        entropyParticleNumberFactor = 1;
                     }
                     
                     for (int i=0; i<evolutionFactor.size(); i++) {
@@ -60,7 +63,6 @@ void ofApp::update(){
                         if (evolutionFactor[i]<0) {
                             evolutionFactorDirection[i] = 1;
                         }
-
                     }
                 }
             }
@@ -69,26 +71,24 @@ void ofApp::update(){
     
     
     if (bEntropyParticleView) {
-        entropyParticleMake(entrophyTriLineXPos);
+        entropyParticleMake(entropyParticleIndex);
         entropyParticleUpdate();
     }
-
 
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    //    guideLine();
-    zeroOneScoreDraw();
-    
-//    interfaceInformation();
+    binaryScoreDraw();
+
+    if (bTextInformation) {
+        textInformation();
+    }
     
     if (bPlay) {
-        scoreDraw(noteCounter);
-//        entropyTriDraw(entrophyTriLineXPos);
+        mainScoreDraw(noteCounter);
         if (bEntropyParticleView) entropyParticleDraw();
-//        allDrawing();
     }
     
     textDrawing();
@@ -96,43 +96,40 @@ void ofApp::draw(){
 }
 
 
-
-
-void ofApp::zeroOneScoreSetup(string _sInput){
+void ofApp::binaryScoreSetup(string _sInput){
     
     textInput = _sInput;
     
-    string _zeroOneScore = ofToBinary(textInput);
+    string _binaryScore = ofToBinary(textInput);
     
-    for (int i=0; i<_zeroOneScore.size(); i++) {
-        zeroOneScore.push_back( _zeroOneScore.at(i) );
+    for (int i=0; i<_binaryScore.size(); i++) {
+        binaryScore.push_back( _binaryScore.at(i) );
     }
 
 }
 
 
-void ofApp::zeroOneScoreDraw(){
-
-    float _size = 1.7;
-    _rectHeight = ofGetHeight()*0.00912*_size;
-    _rectWidth = ofGetWidth()*0.00390*_size;
-    _xStep = ofGetWidth()*0.00488*_size;
+void ofApp::binaryScoreDraw(){
+    float binaryElementSize = 1.7;
+    binaryElementHeight = ofGetHeight()/height * 7 * binaryElementSize;
+    binaryElementWidth = ofGetWidth()/width * 4 * binaryElementSize;
+    binaryElementStep = ofGetWidth()/width * 5 * binaryElementSize;
     
-    _sizeX = ( (_rectWidth * zeroOneScore.size()) + ((_xStep-_rectWidth) * (zeroOneScore.size()-1)) );
+    binaryScoreWidth = ( (binaryElementWidth * binaryScore.size()) + ((binaryElementStep-binaryElementWidth) * (binaryScore.size()-1)) );
     
     ofPushMatrix();
-    ofTranslate( ofGetWidth()*0.5-_sizeX*0.5, ofGetHeight()*0.92 );
+    ofTranslate( ofGetWidth()*0.5-binaryScoreWidth*0.5, ofGetHeight()*0.92 );
     ofPushStyle();
     ofSetColor( ofColor::fromHsb( 0, 0, 0, 255) );
     
-    for (int i=0; i<zeroOneScore.size(); i++) {
-        int _yHeight = zeroOneScore[i];
+    for (int i=0; i<binaryScore.size(); i++) {
+        int _binaryElementHeight = binaryScore[i];
         
-        if (_yHeight==1000) _yHeight = 0;
+        if (_binaryElementHeight==1000) _binaryElementHeight = 0;
 
         ofPushMatrix();
-        ofTranslate(i*_xStep, 0);
-        ofRect( 0, 0, _rectWidth, -_yHeight*_rectHeight+1 );
+        ofTranslate(i*binaryElementStep, 0);
+        ofRect( 0, 0, binaryElementWidth, -_binaryElementHeight*binaryElementHeight+1 );
         ofPopMatrix();
     }
     
@@ -142,44 +139,43 @@ void ofApp::zeroOneScoreDraw(){
 }
 
 
-void ofApp::scoreDraw(int _index){
+void ofApp::mainScoreDraw(int _index){
     
     ofPushMatrix();
-    ofTranslate( ofGetWidth()*0.5-_sizeX*0.5, ofGetHeight()*0.45 );
+    ofTranslate( ofGetWidth()*0.5-binaryScoreWidth*0.5, ofGetHeight()*0.45 );
 
     ofPushStyle();
     ofSetColor( ofColor::fromHsb( 0, 0, 0, 50) );
-    float _size = 2.5;
-    float _xPos = _index*_xStep;
-    ofLine( _xPos, -ofGetHeight()*0.0651*2.4, _xPos, ofGetHeight()*0.0651*2.4 );
+    float binaryElementSize = 2.5;
+    float _binaryElementXPos = _index * binaryElementStep;
+    ofLine( _binaryElementXPos, -ofGetHeight()/height * 50 * 2.4, _binaryElementXPos, ofGetHeight()/height * 50 * 2.4 );
     ofPopStyle();
 
     
     ofPushStyle();
     ofSetColor( ofColor::fromHsb( 0, 0, 0, 255) );
     
-    for (int i=0; i<scoreData.size(); i++) {
+    for (int i=0; i<mainScoreData.size(); i++) {
 
-        float _yHeight = scoreData[i]+ofMap(evolutionValue[i],-100,100,-20,20);
+        float _binaryElementHeight = mainScoreData[i]+ofMap(evolutionValue[i],-100,100,-20,20);
 
         ofPushMatrix();
-        ofTranslate(i*_xStep, 0);
-        ofRect( 0, 0, _rectWidth, -_yHeight*_rectHeight+1 );
+        ofTranslate(i*binaryElementStep, 0);
+        ofRect( 0, 0, binaryElementWidth, -_binaryElementHeight * binaryElementHeight+1 );
         ofPopMatrix();
     }
-    
     
     ofPopStyle();
     ofPopMatrix();
     
 }
 
-void ofApp::scoreDataInput(){
-    scoreData.clear();
+void ofApp::mainScoreDataInput(){
+    mainScoreData.clear();
     
-    for (int i=0; i<zeroOneScore.size(); i++) {
+    for (int i=0; i<binaryScore.size(); i++) {
         
-        int _yHeight = zeroOneScore[i];
+        int _yHeight = binaryScore[i];
 
         if (_yHeight==0) {
             _yHeight = -1;
@@ -189,76 +185,36 @@ void ofApp::scoreDataInput(){
         
         _yHeight = oldYHeight+_yHeight;
         
-        scoreData.push_back(-_yHeight);
+        mainScoreData.push_back(-_yHeight);
         oldYHeight = _yHeight;
     }
     
 }
 
-void ofApp::scorePlay(int _index){
+void ofApp::mainsScorePlay(int _index){
     
-    if (scoreData.size()>0) {
-        int newScaleDegree = scoreData[_index]*3+40+ofMap(evolutionValue[_index],-100,100,-50,50);
+    if (mainScoreData.size()>0) {
+        int newScaleDegree = mainScoreData[_index]*3+40+ofMap(evolutionValue[_index],-100,100,-50,50);
         if(newScaleDegree != scaleDegree ){
             scaleDegree = newScaleDegree;
             trigger(scaleDegree);
-//            triggerScale(scaleDegree,1);
-            allValue.push_back(newScaleDegree);
         }else{
             scaleDegree = newScaleDegree;
         }
     }
 }
 
-void ofApp::allDrawing(){
-    
-    ofPushStyle();
-    ofSetColor( ofColor::fromHsb( 0, 0, 0, 50) );
-
-    for (int i=0; i<allValue.size(); i++) {
-        ofRect( i*3, 0, 3, allValue[i]*10 );
-    }
-    ofPopStyle();
-}
-
-void ofApp::entropyTriDraw(int _xPos){
-    ofPushMatrix();
-    ofPushStyle();
-    
-    int _l = ofGetWidth() * 0.09765625;
-    int _h = -_l;
-    int movingPointX = ofMap(_xPos, 0, 50, 0, ofGetWidth()*0.048828125)*2;;
-    int movingPointY = -movingPointX;
-
-    float _xTranslatePos = ofGetWidth()*0.146484375;
-    ofTranslate( ofGetWidth()/2-_l * 0.5, ofGetHeight()*0.8 );
-    ofSetColor( ofColor::fromHsb( 0, 0, 0, 50) );
-    
-    ofLine( movingPointX, 0, movingPointX, movingPointY );
-    ofLine( 0, movingPointY, movingPointX, movingPointY );
-    
-    ofLine( 0, 0, _l, 0 );
-    ofLine( 0, 0, 0, _h );
-
-    ofSetColor( ofColor::fromHsb( 0, 0, 0, 30) );
-    ofLine( 0, 0, _l, _h );
-    
-    ofPopStyle();
-    ofPopMatrix();
-    
-}
-
 
 void ofApp::entropyParticleMake(int _index) {
     
-    entropyParticleHeight = ofGetHeight() * 0.0390625;
-    entropyParticleWidth = ofGetWidth() * 0.146484375;
+    entropyParticleBoxHeight = ofGetHeight()/height * 30;
+    entropyParticleBoxWidth = ofGetWidth()/width * 150;
         
     int _indexRatio = ofClamp( ofMap( _index, 0, 50, 1, 7), 1, 7 );
     
     if (_index-oldEntropyparticleDrawIndex==1) {
         for (int i=0; i<_indexRatio; i++) {
-            particleCircle.push_back( ParticleCircle( entropyParticleWidth, entropyParticleHeight ) );
+            particleCircle.push_back( ParticleCircle( entropyParticleBoxWidth, entropyParticleBoxHeight ) );
         }
     }
     if (_index-oldEntropyparticleDrawIndex==-1) {
@@ -272,18 +228,17 @@ void ofApp::entropyParticleMake(int _index) {
 }
 
 void ofApp::entropyParticleUpdate(){
-    
     for (int i=0; i<particleCircle.size(); i++) {
-        particleCircle[i].update( entropyParticleWidth, entropyParticleHeight );
+        particleCircle[i].update( entropyParticleBoxWidth, entropyParticleBoxHeight );
     }
 }
 
 void ofApp::entropyParticleDraw() {
     
-    int _l = ofGetWidth() * 0.146484375;
-    int _h = ofGetHeight() * 0.09114583;
+    int _l = ofGetWidth()/width * 150;
+    int _h = ofGetHeight()/height * 70;
     
-    float _xTranslatePos = ofGetWidth()*0.146484375;
+    float _xTranslatePos = ofGetWidth()/width * 150;
     
     
     ofPushMatrix();
@@ -298,48 +253,21 @@ void ofApp::entropyParticleDraw() {
     ofNoFill();
     ofSetColor( ofColor::fromHsb( 0, 0, 0, 40) );
 
-    ofRect( 0, 0, entropyParticleWidth, entropyParticleHeight );
+    ofRect( 0, 0, entropyParticleBoxWidth, entropyParticleBoxHeight );
     
     ofPopStyle();
     ofPopMatrix();
     
 }
-
-
-void ofApp::guideLine(){
-    
-    ofPushMatrix();
-    ofPushStyle();
-    
-    ofSetColor( ofColor::fromHsb( 90, 125, 255, 255) );
-    
-    int _size = 20;
-    int step = 80;
-    
-    for (int i=0; i<=ofGetWidth()/step; i++) {
-        for (int j=0; j<=ofGetHeight()/step; j++) {
-            ofPushMatrix();
-            ofTranslate(i*step, j*step);
-            ofLine( 0, -_size/2, 0, _size/2 );
-            ofLine( -_size/2, 0, _size/2, 0 );
-            ofPopMatrix();
-        }
-    }
-    
-    ofPopStyle();
-    ofPopMatrix();
-    
-}
-
 
 void ofApp::textInputCharToNumber(char _input){
 
-    szeroOneScore.push_back(ofToBinary( _input ));
+    sBinaryScore.push_back(ofToBinary( _input ));
     
-    string _zeroOneScore = ofToBinary( _input );
+    string _binaryScore = ofToBinary( _input );
 
-    for (int i=0; i<_zeroOneScore.size(); i++) {
-        zeroOneScore.push_back( _zeroOneScore.at(i)-48 );
+    for (int i=0; i<_binaryScore.size(); i++) {
+        binaryScore.push_back( _binaryScore.at(i)-48 );
         evolutionFactor.push_back(0);
         evolutionFactorDirection.push_back(1);
         evolutionValue.push_back(0);
@@ -347,14 +275,18 @@ void ofApp::textInputCharToNumber(char _input){
     
 }
 
-void ofApp::interfaceInformation(){
+
+
+void ofApp::textInformation(){
     
     ofPushStyle();
     ofSetColor( ofColor::fromHsb( 0, 0, 0, 255) );
     
-    ofDrawBitmapString("fullScreen : enter key", 10, ofGetHeight()-40);
-    ofDrawBitmapString("reset : del", 10, ofGetHeight()-25);
-    ofDrawBitmapString("play : space bar", 10, ofGetHeight()-10);
+    ofDrawBitmapString("hide/view information : \"1\" key", 10, ofGetHeight()-70);
+    ofDrawBitmapString("fullScreen : enter key", 10, ofGetHeight()-55);
+    ofDrawBitmapString("1: enter alphabets", 10, ofGetHeight()-40);
+    ofDrawBitmapString("2: play (space bar)", 10, ofGetHeight()-25);
+    ofDrawBitmapString("3: reset: del key", 10, ofGetHeight()-10);
     ofPopStyle();
     
 }
@@ -366,18 +298,18 @@ void ofApp::synthSetting(){
     ControlGenerator tone2Vol = synth.addParameter("tone2VolIn");
 
     Generator tone = RectWave().freq( noteFreq );
-    Generator tone2 = SawtoothWave().freq( noteFreq*12 );
+    Generator tonePlus = SawtoothWave().freq( noteFreq*12 );
     
     tone = LPF12().input(tone).Q(10).cutoff((noteFreq * 30) + SineWave().freq(3) * 0.5 * noteFreq);
-    tone2 = LPF24().input(tone2).Q(20).cutoff((noteFreq * 30) + SineWave().freq(3) * 0.5 * noteFreq);
+    tonePlus = LPF24().input(tonePlus).Q(20).cutoff((noteFreq * 30) + SineWave().freq(3) * 0.5 * noteFreq);
     
-    tone = tone * 0.5 + tone2 * 10.8;
+    tone = tone * 0.5 + tonePlus * 10;
     
     ControlGenerator envelopeTrigger = synth.addParameter("trigger");
     Generator toneWithEnvelope = tone * ADSR().attack(0).decay(0.1).sustain(0).release(0).trigger(envelopeTrigger).legato(false);
     Generator toneWithDelay = StereoDelay(0.5, 0.75).input(toneWithEnvelope).wetLevel(0.2).feedback(0.25);
 
-    
+    //-----
     ControlGenerator midiNoteBass = synthBass.addParameter("midiNumber");
     ControlGenerator noteFreqBass =  ControlMidiToFreq().input(midiNoteBass);
     
@@ -388,16 +320,12 @@ void ofApp::synthSetting(){
     ControlGenerator envelopeTriggerBass = synthBass.addParameter("trigger");
     Generator toneWithEnvelopeBass = toneBass * ADSR().attack(0).decay(0.03).sustain(0).release(0).trigger(envelopeTriggerBass).legato(false);
     
+    //-----
     synth.setOutputGen( toneWithDelay + toneWithEnvelopeBass );
     
 }
 
-void ofApp::synthBassSetting(){
-    
-//    Generator toneWithDelay = StereoDelay(0.5, 0.75).input(toneWithEnvelope).wetLevel(0.2).feedback(0.25);
-//    synthBass.setOutputGen( toneWithEnvelopeBass );
- 
-}
+
 
 //--------------------------------------------------------------
 void ofApp::trigger(){
@@ -429,9 +357,10 @@ void ofApp::triggerScale(int _note, int _scale){
 
 
 
+//--------------------------------------------------------------
 void ofApp::textDrawSetup() {
     textSizeFactor = 0.7;
-    textFontSize = ofGetWidth()*0.0205078125 * textSizeFactor;
+    textFontSize = ofGetWidth()/width * 20 * textSizeFactor;
     drawingFont.loadFont("arialbd.ttf", textFontSize);
 }
 
@@ -440,12 +369,12 @@ void ofApp::textDrawing() {
     ofPushMatrix();
     ofPushStyle();
     ofSetColor( ofColor::fromHsb( 0, 0, 0, 160) );
-    ofTranslate( ofGetWidth()*0.5-szeroOneScore.size()*textFontSize*0.5, ofGetHeight()-ofGetHeight()*0.03451 );
+    ofTranslate( ofGetWidth()*0.5-sBinaryScore.size()*textFontSize*0.5, ofGetHeight()-ofGetHeight()/height*26 );
  
-    for (int i=0; i<szeroOneScore.size(); i++) {
-        ofRectangle r = drawingFont.getStringBoundingBox(ofBinaryToString(szeroOneScore[i]), 0, 0);
+    for (int i=0; i<sBinaryScore.size(); i++) {
+        ofRectangle r = drawingFont.getStringBoundingBox(ofBinaryToString(sBinaryScore[i]), 0, 0);
         ofPushMatrix();
-        drawingFont.drawString( ofBinaryToString(szeroOneScore[i]), (i*textFontSize) - r.width/2, 0 );
+        drawingFont.drawString( ofBinaryToString(sBinaryScore[i]), (i*textFontSize) - r.width/2, 0 );
         ofPopMatrix();
     }
     
@@ -468,33 +397,29 @@ void ofApp::keyReleased(int key){
         if (textInputcounter<12) {
             textInputCharToNumber((char)key);
         } else {
-            scoreData.clear();
-            zeroOneScore.clear();
-//            textInputCharToNumber((char)key);
+            mainScoreData.clear();
+            binaryScore.clear();
             oldYHeight = 0;
             textInputcounter = 0;
-            szeroOneScore.clear();
+            sBinaryScore.clear();
         }
     }
 
-    
     if (key==127) {
-        zeroOneScore.clear();
+        binaryScore.clear();
         oldYHeight = 0;
-        scoreData.clear();
+        mainScoreData.clear();
         textInputcounter = 0;
         tickCounter = 0;
         noteCounter = 0;
-        entrophyTriLineXPos = 1;
+        entropyParticleIndex = 1;
         oldEntropyparticleDrawIndex = 0;
         evolutionFactor.clear();
         evolutionValue.clear();
         evolutionFactorDirection.clear();
-        szeroOneScore.clear();
+        sBinaryScore.clear();
         bEntropyParticleView = false;
         particleCircle.clear();
-//        entropyParticleMake(0);
-
     }
     
     if (key==32) {
@@ -502,19 +427,22 @@ void ofApp::keyReleased(int key){
         
         bPlay = !bPlay;
         if (bPlay) {
-            scoreDataInput();
-            entrophyTriLineXPos = 1;
+            mainScoreDataInput();
+            entropyParticleIndex = 1;
             oldEntropyparticleDrawIndex = 0;
-            if (scoreData.size()!=0) bEntropyParticleView = true;
+            if (mainScoreData.size()!=0) bEntropyParticleView = true;
         } else {
             particleCircle.clear();
         }
     }
-
     
     if (key==13) {
         bFullScreen = !bFullScreen;
         ofSetFullscreen(bFullScreen);
+    }
+    
+    if (key=='1') {
+        bTextInformation = !bTextInformation;
     }
     
 }
@@ -549,8 +477,8 @@ void ofApp::windowResized(int w, int h){
     textDrawSetup();
     
     for (int i=0; i<particleCircle.size(); i++) {
-        particleCircle[i].xMax = entropyParticleWidth;
-        particleCircle[i].yMax = entropyParticleHeight;
+        particleCircle[i].xMax = entropyParticleBoxWidth;
+        particleCircle[i].yMax = entropyParticleBoxHeight;
     }
     
 }
