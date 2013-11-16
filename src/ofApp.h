@@ -1,10 +1,10 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxTonic.h"
+#include "ofxMaxim.h"
 #include "ParticleCircle.h"
 
-using namespace Tonic;
+//using namespace Tonic;
 
 class ofApp : public ofBaseApp{
     
@@ -68,8 +68,30 @@ public:
     
     int oldYHeight;
     
-    ofxTonicSynth synth;
-    ofxTonicSynth synthBass;
+
+	
+    int initialBufferSize;
+    int sampleRate;
+    float wave,sample,outputs[2];
+    maxiOsc mySine,myOtherSine;
+    ofxMaxiMix mymix;
+    ofxMaxiOsc sine1;
+    ofxMaxiSample beats,beat;
+    vector <float> lAudio;
+    vector <float> rAudio;
+    maxiOsc VCO1,VCO2,LFO1,LFO2;
+    maxiFilter VCF;
+    maxiEnvelope ADSR;
+    double adsrEnv[8]={1,5,0.125,250,0.125,125,0,500};
+    double VCO1out,VCO2out,LFO1out,LFO2out,VCFout,ADSRout;
+    double chorusOut;
+    maxiChorus chorusEffect;
+    
+    
+    
+
+//    ofxTonicSynth synth;
+//    ofxTonicSynth synthBass;
     void synthSetting();
     int scaleDegree;
     void trigger();

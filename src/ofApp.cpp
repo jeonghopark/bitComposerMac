@@ -8,7 +8,10 @@ void ofApp::setup(){
     ofSetFrameRate(60);
     ofBackground( ofColor::fromHsb(0, 0, 255) );
     
-    ofSoundStreamSetup(2, 0, this, 44100, 256, 4);
+    sampleRate 			= 44100;
+	initialBufferSize	= 512;
+	ofSoundStreamSetup(2,0,this, sampleRate, initialBufferSize, 4);
+//    ofSoundStreamSetup(2, 0, this, 44100, 256, 4);
     
     textInput = "";
     binaryScoreSetup(textInput);
@@ -29,7 +32,11 @@ void ofApp::setup(){
     bEntropyParticleView = false;
     
     bTextInformation = true;
-    
+    int bufferSize		= 512;
+	sampleRate 			= 44100;
+	lAudio.assign(bufferSize, 0.0);
+	rAudio.assign(bufferSize, 0.0);
+	
     
 
 }
@@ -293,35 +300,35 @@ void ofApp::textInformation(){
 
 void ofApp::synthSetting(){
     
-    ControlGenerator midiNote = synth.addParameter("midiNumber");
-    ControlGenerator noteFreq =  ControlMidiToFreq().input(midiNote);
-    ControlGenerator tone2Vol = synth.addParameter("tone2VolIn");
-
-    Generator tone = RectWave().freq( noteFreq );
-    Generator tonePlus = SawtoothWave().freq( noteFreq*12 );
-    
-    tone = LPF12().input(tone).Q(10).cutoff((noteFreq * 30) + SineWave().freq(3) * 0.5 * noteFreq);
-    tonePlus = LPF24().input(tonePlus).Q(20).cutoff((noteFreq * 30) + SineWave().freq(3) * 0.5 * noteFreq);
-    
-    tone = tone * 0.5 + tonePlus * 10;
-    
-    ControlGenerator envelopeTrigger = synth.addParameter("trigger");
-    Generator toneWithEnvelope = tone * ADSR().attack(0).decay(0.1).sustain(0).release(0).trigger(envelopeTrigger).legato(false);
-    Generator toneWithDelay = StereoDelay(0.5, 0.75).input(toneWithEnvelope).wetLevel(0.2).feedback(0.25);
-
-    //-----
-    ControlGenerator midiNoteBass = synthBass.addParameter("midiNumber");
-    ControlGenerator noteFreqBass =  ControlMidiToFreq().input(midiNoteBass);
-    
-    Generator toneBass = RectWave().freq( noteFreqBass );
-    
-    toneBass = LPF12().input(toneBass).Q(10).cutoff((noteFreqBass * 30) + SineWave().freq(3) * 0.5 * noteFreqBass);
-    
-    ControlGenerator envelopeTriggerBass = synthBass.addParameter("trigger");
-    Generator toneWithEnvelopeBass = toneBass * ADSR().attack(0).decay(0.03).sustain(0).release(0).trigger(envelopeTriggerBass).legato(false);
-    
-    //-----
-    synth.setOutputGen( toneWithDelay + toneWithEnvelopeBass );
+//    ControlGenerator midiNote = synth.addParameter("midiNumber");
+//    ControlGenerator noteFreq =  ControlMidiToFreq().input(midiNote);
+//    ControlGenerator tone2Vol = synth.addParameter("tone2VolIn");
+//
+//    Generator tone = RectWave().freq( noteFreq );
+//    Generator tonePlus = SawtoothWave().freq( noteFreq*12 );
+//    
+//    tone = LPF12().input(tone).Q(10).cutoff((noteFreq * 30) + SineWave().freq(3) * 0.5 * noteFreq);
+//    tonePlus = LPF24().input(tonePlus).Q(20).cutoff((noteFreq * 30) + SineWave().freq(3) * 0.5 * noteFreq);
+//    
+//    tone = tone * 0.5 + tonePlus * 10;
+//    
+//    ControlGenerator envelopeTrigger = synth.addParameter("trigger");
+//    Generator toneWithEnvelope = tone * ADSR().attack(0).decay(0.1).sustain(0).release(0).trigger(envelopeTrigger).legato(false);
+//    Generator toneWithDelay = StereoDelay(0.5, 0.75).input(toneWithEnvelope).wetLevel(0.2).feedback(0.25);
+//
+//    //-----
+//    ControlGenerator midiNoteBass = synthBass.addParameter("midiNumber");
+//    ControlGenerator noteFreqBass =  ControlMidiToFreq().input(midiNoteBass);
+//    
+//    Generator toneBass = RectWave().freq( noteFreqBass );
+//    
+//    toneBass = LPF12().input(toneBass).Q(10).cutoff((noteFreqBass * 30) + SineWave().freq(3) * 0.5 * noteFreqBass);
+//    
+//    ControlGenerator envelopeTriggerBass = synthBass.addParameter("trigger");
+//    Generator toneWithEnvelopeBass = toneBass * ADSR().attack(0).decay(0.03).sustain(0).release(0).trigger(envelopeTriggerBass).legato(false);
+//    
+//    //-----
+//    synth.setOutputGen( toneWithDelay + toneWithEnvelopeBass );
     
 }
 
@@ -332,26 +339,27 @@ void ofApp::trigger(){
     static int twoOctavePentatonicScale[10] = {0, 2, 4, 7, 9, 12, 14, 16, 19, 21};
     int degreeToTrigger = floor(ofClamp(scaleDegree, 0, 9));
 	
-    synth.setParameter("midiNumber", 44 + twoOctavePentatonicScale[degreeToTrigger]);
-    synth.setParameter("trigger", 1);
+//    synth.setParameter("midiNumber", 44 + twoOctavePentatonicScale[degreeToTrigger]);
+//    synth.setParameter("trigger", 1);
 }
 
 void ofApp::trigger(int _note){
-    synth.setParameter("midiNumber", _note);
-    synth.setParameter("trigger", 1);
-    synth.setParameter("tone2VolIn", ofMap(_note,30,80,0.2,5.0));
-    
-    synthBass.setParameter("midiNumber", _note-24);
-    synthBass.setParameter("trigger", 1);
+//    synth.setParameter("midiNumber", _note);
+//    synth.setParameter("trigger", 1);
+//    synth.setParameter("tone2VolIn", ofMap(_note,30,80,0.2,5.0));
+//    
+//    synthBass.setParameter("midiNumber", _note-24);
+//    synthBass.setParameter("trigger", 1);
+    ADSR.trigger(0, adsrEnv[0]);
 }
 
 void ofApp::triggerScale(int _note, int _scale){
 //    static int twoOctavePentatonicScale[10] = {-19, -12, -7, -4, 0, 5, 7, 12, 19, 21};
 //    static int twoOctavePentatonicScale[10] = { 0, 2, 4, 5, 6, 9, 10, 12, 14, 16};  // Major Locrian scale
-    static int twoOctavePentatonicScale[10] = { 0, 2, 4, 6, 9, 10, 12, 14, 16, 18};  // Prometheus scale
-    int degreeToTrigger = floor(ofClamp( ofMap(_note, 20, 90, 0, 9), 0, 9));
-    synth.setParameter("midiNumber",  + twoOctavePentatonicScale[degreeToTrigger] + 50);
-    synth.setParameter("trigger", 1);
+//    static int twoOctavePentatonicScale[10] = { 0, 2, 4, 6, 9, 10, 12, 14, 16, 18};  // Prometheus scale
+//    int degreeToTrigger = floor(ofClamp( ofMap(_note, 20, 90, 0, 9), 0, 9));
+//    synth.setParameter("midiNumber",  + twoOctavePentatonicScale[degreeToTrigger] + 50);
+//    synth.setParameter("trigger", 1);
 }
 
 
@@ -448,7 +456,36 @@ void ofApp::keyReleased(int key){
 }
 
 void ofApp::audioRequested (float * output, int bufferSize, int nChannels){
-    synth.fillBufferOfFloats(output, bufferSize, nChannels);
+
+    for (int i = 0; i < bufferSize; i++){
+        
+        ADSRout=ADSR.line(8,adsrEnv);
+        
+        LFO1out=LFO1.sinebuf(0.2);
+        
+        double test1;
+        convert a1;
+        test1 = a1.mtof(scaleDegree+20);
+        double test2;
+        convert a2;
+        test2 = a2.mtof(scaleDegree+20);
+        
+        VCO1out=VCO1.pulse(test1,0.16);
+        
+        VCO2out=VCO2.pulse(test2*2+LFO1out,0.3);
+        
+        VCFout=VCF.lores((VCO1out+VCO2out)*0.5, test2+(ADSRout*5000), 100);
+        
+        
+        sample=VCFout*ADSRout;
+
+        // inline double maxiChorus::chorus(const double input, const unsigned int delay, const double feedback, const double speed, const double depth)
+        chorusOut = chorusEffect.chorus(sample, 100, 0.3, 0.2, 0.5);
+        
+        lAudio[i] = output[i*nChannels    ] = chorusOut * 0.5;
+        rAudio[i] = output[i*nChannels + 1] = chorusOut * 0.5;
+        
+    }
 }
 
 //--------------------------------------------------------------
