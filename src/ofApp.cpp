@@ -3,6 +3,7 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    
     ofSetDataPathRoot("../Resources/data/");
     
     ofSetFrameRate(60);
@@ -29,8 +30,6 @@ void ofApp::setup(){
     bEntropyParticleView = false;
     
     bTextInformation = true;
-    
-    
     
 }
 
