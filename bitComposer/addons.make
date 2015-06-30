@@ -1,2 +1,3 @@
 ofxPd
 ofxTonic
+addons
