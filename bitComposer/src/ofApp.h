@@ -12,6 +12,7 @@ public:
     void setup();
     void update();
     void draw();
+    void exit();
     
     void keyPressed(int key);
     void keyReleased(int key);
@@ -75,7 +76,7 @@ public:
     void trigger();
     void trigger(int _note);
     void triggerScale(int _note, int _scale);
-    void audioRequested (float * output, int bufferSize, int nChannels);
+    void audioRequested(float * output, int bufferSize, int nChannels);
         
     ofTrueTypeFont drawingFont;
     int textFontSize;

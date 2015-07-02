@@ -95,6 +95,15 @@ void ofApp::draw(){
 }
 
 
+//--------------------------------------------------------------
+void ofApp::exit(){
+    
+    ofSoundStreamClose();
+    
+}
+
+
+//--------------------------------------------------------------
 void ofApp::binaryScoreSetup(string _sInput){
     
     textInput = _sInput;
