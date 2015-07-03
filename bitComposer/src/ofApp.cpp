@@ -98,6 +98,8 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::exit(){
     
+    std::exit(0);
+    ofSoundStreamStop();
     ofSoundStreamClose();
     
 }
@@ -455,7 +457,7 @@ void ofApp::keyReleased(int key){
     
 }
 
-void ofApp::audioRequested (float * output, int bufferSize, int nChannels){
+void ofApp::audioOut(float * output, int bufferSize, int nChannels){
     synth.fillBufferOfFloats(output, bufferSize, nChannels);
 }
 

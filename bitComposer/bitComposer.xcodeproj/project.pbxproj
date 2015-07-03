@@ -43,6 +43,7 @@
 		9F0EB87185C49652D6B4CF41 /* ControlCallback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA4F813F8FC93CFD10E41855 /* ControlCallback.cpp */; };
 		A080206DDA89F3B42CC45CD4 /* StereoDelay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BCDDB9FF49AEED30B3484C9F /* StereoDelay.cpp */; };
 		A5A1C66C69F171040E6BC04E /* ControlComparison.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 335B172B0B88819777FE07DD /* ControlComparison.cpp */; };
+		A8A2AFEB1B45DD930080E17B /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A8A2AFE91B45DD8A0080E17B /* Images.xcassets */; };
 		AAF851673EDD80F622915198 /* ParticleCircle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B49CEB578972D6C8DFE25F55 /* ParticleCircle.cpp */; };
 		B4907B79ADE43D245CAB0EB6 /* CompressorLimiter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5279A0818F311255D5D174C8 /* CompressorLimiter.cpp */; };
 		BBD1FC0FAB93A2A1C14C1461 /* MonoToStereoPanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9202EB574F57B4D5FCC12A3F /* MonoToStereoPanner.cpp */; };
@@ -182,6 +183,7 @@
 		A40A7CE8FBCF378D0A610B7C /* ControlParameter.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ControlParameter.cpp; path = ../../../../openFrameworks/addons/ofxTonic/src/Tonic/ControlParameter.cpp; sourceTree = SOURCE_ROOT; };
 		A56CCF1261DFF0806E6EF0E3 /* ControlParameter.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ControlParameter.h; path = ../../../../openFrameworks/addons/ofxTonic/src/Tonic/ControlParameter.h; sourceTree = SOURCE_ROOT; };
 		A74D77E09C4E2FCC66569157 /* ControlPrinter.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ControlPrinter.cpp; path = ../../../../openFrameworks/addons/ofxTonic/src/Tonic/ControlPrinter.cpp; sourceTree = SOURCE_ROOT; };
+		A8A2AFE91B45DD8A0080E17B /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = BitComposer/Images.xcassets; sourceTree = "<group>"; };
 		AA4F813F8FC93CFD10E41855 /* ControlCallback.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ControlCallback.cpp; path = ../../../../openFrameworks/addons/ofxTonic/src/Tonic/ControlCallback.cpp; sourceTree = SOURCE_ROOT; };
 		ACCF177C70FC4A32CE6F95A1 /* ControlRecorder.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ControlRecorder.cpp; path = ../../../../openFrameworks/addons/ofxTonic/src/Tonic/ControlRecorder.cpp; sourceTree = SOURCE_ROOT; };
 		AFF591A00876353DAAD8538C /* ofxTonicSynth.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxTonicSynth.h; path = ../../../../openFrameworks/addons/ofxTonic/src/ofxTonicSynth.h; sourceTree = SOURCE_ROOT; };
@@ -414,6 +416,7 @@
 		E4B69B4A0A3A1720003C02F2 = {
 			isa = PBXGroup;
 			children = (
+				A8A2AFE91B45DD8A0080E17B /* Images.xcassets */,
 				E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */,
 				E4EB6923138AFD0F00A09F29 /* Project.xcconfig */,
 				E4B69E1C0A3A1BDC003C02F2 /* src */,
@@ -455,6 +458,7 @@
 				E4B69B590A3A1756003C02F2 /* Frameworks */,
 				E4B6FFFD0C3F9AB9008CF71C /* ShellScript */,
 				E4C2427710CC5ABF004149E2 /* CopyFiles */,
+				A8A2AFEA1B45DD900080E17B /* Resources */,
 			);
 			buildRules = (
 			);
@@ -510,6 +514,17 @@
 		};
 /* End PBXReferenceProxy section */
 
+/* Begin PBXResourcesBuildPhase section */
+		A8A2AFEA1B45DD900080E17B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A8A2AFEB1B45DD930080E17B /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXShellScriptBuildPhase section */
 		E4B6FFFD0C3F9AB9008CF71C /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -522,7 +537,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rsync -aved ../../../../openFrameworks/libs/fmodex/lib/osx/libfmodex.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/\"; install_name_tool -change ./libfmodex.dylib @executable_path/libfmodex.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/$PRODUCT_NAME\";\n\nmkdir -p \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/\";\nmkdir -p \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/data/\";\ncp -r bin/data \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources\";\ncp -f \"$ICON_FILE\" \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/\"\n\nrsync -aved \"$ICON_FILE\" \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/\";\nrsync -aved ../../../../openFrameworks/libs/glut/lib/osx/GLUT.framework \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Frameworks/\";\n";
+			shellScript = "rsync -aved ../../../../openFrameworks/libs/fmodex/lib/osx/libfmodex.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/\"; install_name_tool -change ./libfmodex.dylib @executable_path/libfmodex.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/$PRODUCT_NAME\";\nmkdir -p \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/\"\nrsync -aved \"$ICON_FILE\" \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Resources/\"\nrsync -aved ../../../../openFrameworks/libs/glut/lib/osx/GLUT.framework \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/Frameworks/\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -691,6 +706,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E4EB6923138AFD0F00A09F29 /* Project.xcconfig */;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -726,6 +742,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E4EB6923138AFD0F00A09F29 /* Project.xcconfig */;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (

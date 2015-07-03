@@ -76,7 +76,7 @@ public:
     void trigger();
     void trigger(int _note);
     void triggerScale(int _note, int _scale);
-    void audioRequested(float * output, int bufferSize, int nChannels);
+    void audioOut(float * output, int bufferSize, int nChannels);
         
     ofTrueTypeFont drawingFont;
     int textFontSize;
