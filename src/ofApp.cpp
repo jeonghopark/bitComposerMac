@@ -37,10 +37,13 @@ void ofApp::setup(){
 void ofApp::update(){
     
     if (bPlay) {
+
         if (ofGetFrameNum()%2==0) {
             tickCounter++;
+
             if ( (tickCounter%8==0)||(tickCounter%4==0) ) {
                 mainsScorePlay(noteCounter);
+
                 noteCounter++;
                 if (noteCounter>binaryScore.size()-1) {
                     noteCounter = 0;
@@ -49,6 +52,7 @@ void ofApp::update(){
                     if (entropyParticleIndex>50) {
                         entropyParticleNumberFactor = -1;
                     }
+                    
                     if (entropyParticleIndex<0) {
                         entropyParticleNumberFactor = 1;
                     }
@@ -119,6 +123,7 @@ void ofApp::binaryScoreSetup(string _sInput){
 }
 
 
+//--------------------------------------------------------------
 void ofApp::binaryScoreDraw(){
     float binaryElementSize = 1.7;
     binaryElementHeight = ofGetHeight()/height * 7 * binaryElementSize;
@@ -139,7 +144,7 @@ void ofApp::binaryScoreDraw(){
         
         ofPushMatrix();
         ofTranslate(i*binaryElementStep, 0);
-        ofRect( 0, 0, binaryElementWidth, -_binaryElementHeight*binaryElementHeight+1 );
+        ofDrawRectangle( 0, 0, binaryElementWidth, -_binaryElementHeight*binaryElementHeight+1 );
         ofPopMatrix();
     }
     
@@ -149,6 +154,7 @@ void ofApp::binaryScoreDraw(){
 }
 
 
+//--------------------------------------------------------------
 void ofApp::mainScoreDraw(int _index){
     
     ofPushMatrix();
@@ -158,7 +164,7 @@ void ofApp::mainScoreDraw(int _index){
     ofSetColor( ofColor::fromHsb( 0, 0, 0, 50) );
     float binaryElementSize = 2.5;
     float _binaryElementXPos = _index * binaryElementStep;
-    ofLine( _binaryElementXPos, -ofGetHeight()/height * 50 * 2.4, _binaryElementXPos, ofGetHeight()/height * 50 * 2.4 );
+    ofDrawLine( _binaryElementXPos, -ofGetHeight()/height * 50 * 2.4, _binaryElementXPos, ofGetHeight()/height * 50 * 2.4 );
     ofPopStyle();
     
     
@@ -171,7 +177,7 @@ void ofApp::mainScoreDraw(int _index){
         
         ofPushMatrix();
         ofTranslate(i*binaryElementStep, 0);
-        ofRect( 0, 0, binaryElementWidth, -_binaryElementHeight * binaryElementHeight+1 );
+        ofDrawRectangle( 0, 0, binaryElementWidth, -_binaryElementHeight * binaryElementHeight+1 );
         ofPopMatrix();
     }
     
@@ -180,6 +186,8 @@ void ofApp::mainScoreDraw(int _index){
     
 }
 
+
+//--------------------------------------------------------------
 void ofApp::mainScoreDataInput(){
     mainScoreData.clear();
     
@@ -201,6 +209,9 @@ void ofApp::mainScoreDataInput(){
     
 }
 
+
+
+//--------------------------------------------------------------
 void ofApp::mainsScorePlay(int _index){
     
     if (mainScoreData.size()>0) {
@@ -215,6 +226,9 @@ void ofApp::mainsScorePlay(int _index){
 }
 
 
+
+
+//--------------------------------------------------------------
 void ofApp::entropyParticleMake(int _index) {
     
     entropyParticleBoxHeight = ofGetHeight()/height * 30;
@@ -237,12 +251,18 @@ void ofApp::entropyParticleMake(int _index) {
     
 }
 
+
+
+//--------------------------------------------------------------
 void ofApp::entropyParticleUpdate(){
     for (int i=0; i<particleCircle.size(); i++) {
         particleCircle[i].update( entropyParticleBoxWidth, entropyParticleBoxHeight );
     }
 }
 
+
+
+//--------------------------------------------------------------
 void ofApp::entropyParticleDraw() {
     
     int _l = ofGetWidth()/width * 150;
@@ -263,13 +283,16 @@ void ofApp::entropyParticleDraw() {
     ofNoFill();
     ofSetColor( ofColor::fromHsb( 0, 0, 0, 40) );
     
-    ofRect( 0, 0, entropyParticleBoxWidth, entropyParticleBoxHeight );
+    ofDrawRectangle( 0, 0, entropyParticleBoxWidth, entropyParticleBoxHeight );
     
     ofPopStyle();
     ofPopMatrix();
     
 }
 
+
+
+//--------------------------------------------------------------
 void ofApp::textInputCharToNumber(char _input){
     
     sBinaryScore.push_back(ofToBinary( _input ));
@@ -287,6 +310,7 @@ void ofApp::textInputCharToNumber(char _input){
 
 
 
+//--------------------------------------------------------------
 void ofApp::textInformation(){
     
     ofPushStyle();
@@ -301,6 +325,9 @@ void ofApp::textInformation(){
     
 }
 
+
+
+//--------------------------------------------------------------
 void ofApp::synthSetting(){
     
     ControlGenerator midiNote = synth.addParameter("midiNumber");
@@ -346,6 +373,8 @@ void ofApp::trigger(){
     synth.setParameter("trigger", 1);
 }
 
+
+//--------------------------------------------------------------
 void ofApp::trigger(int _note){
     synth.setParameter("midiNumber", _note);
     synth.setParameter("trigger", 1);
@@ -355,6 +384,8 @@ void ofApp::trigger(int _note){
     synthBass.setParameter("trigger", 1);
 }
 
+
+//--------------------------------------------------------------
 void ofApp::triggerScale(int _note, int _scale){
     //    static int twoOctavePentatonicScale[10] = {-19, -12, -7, -4, 0, 5, 7, 12, 19, 21};
     //    static int twoOctavePentatonicScale[10] = { 0, 2, 4, 5, 6, 9, 10, 12, 14, 16};  // Major Locrian scale
@@ -371,10 +402,11 @@ void ofApp::triggerScale(int _note, int _scale){
 void ofApp::textDrawSetup() {
     textSizeFactor = 0.7;
     textFontSize = ofGetWidth()/width * 20 * textSizeFactor;
-    drawingFont.loadFont("arialbd.ttf", textFontSize);
+    drawingFont.load("arialbd.ttf", textFontSize);
 }
 
 
+//--------------------------------------------------------------
 void ofApp::textDrawing() {
     ofPushMatrix();
     ofPushStyle();
@@ -457,9 +489,14 @@ void ofApp::keyReleased(int key){
     
 }
 
+
+
+//--------------------------------------------------------------
 void ofApp::audioOut(float * output, int bufferSize, int nChannels){
     synth.fillBufferOfFloats(output, bufferSize, nChannels);
 }
+
+
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
