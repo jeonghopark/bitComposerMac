@@ -3,8 +3,13 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+
+#ifdef DEBUG
     
+#else
     ofSetDataPathRoot("../Resources/data/");
+#endif
+    
     
     ofSetFrameRate(60);
     ofBackground( ofColor::fromHsb(0, 0, 255) );
@@ -32,6 +37,9 @@ void ofApp::setup(){
     bTextInformation = true;
     
 }
+
+
+
 
 //--------------------------------------------------------------
 void ofApp::update(){
@@ -80,6 +88,9 @@ void ofApp::update(){
     
 }
 
+
+
+
 //--------------------------------------------------------------
 void ofApp::draw(){
     
@@ -99,6 +110,8 @@ void ofApp::draw(){
 }
 
 
+
+
 //--------------------------------------------------------------
 void ofApp::exit(){
     
@@ -107,6 +120,8 @@ void ofApp::exit(){
     ofSoundStreamClose();
     
 }
+
+
 
 
 //--------------------------------------------------------------
@@ -121,6 +136,7 @@ void ofApp::binaryScoreSetup(string _sInput){
     }
     
 }
+
 
 
 //--------------------------------------------------------------
@@ -154,6 +170,8 @@ void ofApp::binaryScoreDraw(){
 }
 
 
+
+
 //--------------------------------------------------------------
 void ofApp::mainScoreDraw(int _index){
     
@@ -185,6 +203,7 @@ void ofApp::mainScoreDraw(int _index){
     ofPopMatrix();
     
 }
+
 
 
 //--------------------------------------------------------------
@@ -223,6 +242,7 @@ void ofApp::mainsScorePlay(int _index){
             scaleDegree = newScaleDegree;
         }
     }
+    
 }
 
 
