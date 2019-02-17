@@ -4,11 +4,11 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 
-#ifdef DEBUG
-    
-#else
-    ofSetDataPathRoot("../Resources/data/");
-#endif
+//#ifdef DEBUG
+//
+//#else
+//    ofSetDataPathRoot("../Resources/data/");
+//#endif
     
     
     ofSetFrameRate(60);
@@ -114,11 +114,7 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::exit(){
-    
-    std::exit(0);
-    ofSoundStreamStop();
-    ofSoundStreamClose();
-    
+        
 }
 
 
@@ -453,10 +449,10 @@ void ofApp::keyPressed(int key){
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
     
-    if ( ((key<=122)&&(key>=97))||((key<=90)&&(key>=65)) ) {
+    if ( ((key <= 122) && (key >= 97)) || ((key <= 90) && (key >= 65)) ) {
         textInputcounter++;
         bPlay = false;
-        if (textInputcounter<12) {
+        if (textInputcounter < 12) {
             textInputCharToNumber((char)key);
         } else {
             mainScoreData.clear();
